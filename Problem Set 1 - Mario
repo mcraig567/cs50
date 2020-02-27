@@ -1,0 +1,50 @@
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
+{
+    int height, row, spaces, count;
+    
+    //Get height of pyramid
+    do
+    {
+        height = get_int("Height: ");
+    }
+    while(height < 1 || height > 8);
+
+    //Print out rows of spaces and #s
+    for (row = 0; row < height; row++)
+    {
+        spaces = height - row - 1;
+
+        //Left-hand spaces
+        for (count = 0; count < spaces; count++)
+        {
+            printf(" ");
+        }
+
+        //Left-hand hash marks
+        for (count = 0; count < row + 1; count++)
+        {
+            printf("#");
+        }
+
+        //Two spaces for every case
+        printf("  ");
+
+        //Right-hand hash marks
+        for (count = 0; count < row+  1; count++)
+        {  
+            printf("#");
+        }
+
+        //Right-hand spaces
+        for (count = 0; count < spaces; count++)
+        {
+            printf(" ");
+        }
+
+        //Line break once everything is printed
+        printf("\n");
+    }
+}
