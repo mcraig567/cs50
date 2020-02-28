@@ -6,7 +6,7 @@
 int main(void)
 {
     long number;
-    int length, sum = 0, digit, value, visaCheck, ind, indLength, indDigit;
+    int length, sum = 0, digit, value, ind, indLength, indDigit;
     bool visaCheck = false
 
     //Get the credit card number
