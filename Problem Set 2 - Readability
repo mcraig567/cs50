@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <math.h>
+
+int main(void)
+{
+    //Words starts at 1 as last word would not be caught
+    int words = 1, sentances = 0, letters = 0;
+
+    string text = get_string("Text: ");
+    int strLength = strlen(text);
+
+    // Iterate through the string and check for words, spaces, punctuation
+    for (int i = 0; i < strLength; i++)
+    {
+        //Find number of words
+        if (text[i] == ' ')
+        {
+            words ++;
+        }
+
+        //Find number of sentances
+        else if (text[i] == '.' || text[i] == '!' || text[i] == '?')
+        {
+            sentances ++;
+        }
+
+        //Check if upper case letter
+        else if (text[i] >= 65 && text[i] <= 90)
+        {
+            letters ++;
+        }
+
+        //Check if lower case letter
+        else if (text[i] >= 97 && text[i] <= 122)
+        {
+            letters ++;
+        }
+    }
+
+    float letterHunWord = (float) letters / words * 100;
+    float sentanceHunWord = (float) sentances / words * 100;
+
+    //Debugging Print Statements
+    //printf("Sentances: %i\n", sentances);
+    //printf("Words: %i\n", words);
+    //printf("Letters: %i\n", letters);
+    //printf("Letters per hundred words: %.2f\n", letterHunWord);
+    //printf("Sentances per hundred words: %.2f\n", sentanceHunWord);
+
+    float index = 0.0588 * letterHunWord - 0.296 * sentanceHunWord - 15.8;
+
+    //Print grade level
+    if (index < 1)
+    {
+        printf("Before Grade 1");
+    }
+
+    else if (index > 16)
+    {
+        printf("Grade 16+");
+    }
+
+    else
+    {
+        printf("Grade %.0f\n", round(index));
+    }
+}
