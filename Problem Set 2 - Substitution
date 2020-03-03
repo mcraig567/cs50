@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <ctype.h>
+
+int main(int argc, string argv[])
+{
+    string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    string key = argv[1];
+
+    //Error Proofing TBD
+//    if (strlen(key) != 26)
+//    {
+//        printf("")
+//    }
+
+
+    //Convert key to all uppercase
+    for (int j = 0; j < 26; j++)
+    {
+        key[j] = toupper(key[j]);
+    }
+
+
+    string plaintext = get_string("plaintext: ");
+    char cyphertext[strlen(plaintext)];
+
+
+    for (int i = 0, n = strlen(plaintext); i < n; i++)
+    {
+        //Capital letters
+        if (plaintext[i] >= 65 && plaintext[i] <= 90)
+        {
+            for (int h = 0; h < 26; h++)
+            {
+                if (plaintext[i] == ALPHABET[h])
+                {
+                    cyphertext[i] = key[h];
+                }
+            }
+        }
+
+        //Lower case letters
+        else if (plaintext[i] >= 97 && plaintext[i] <= 122)
+        {
+            for (int t = 0; t < 26; t++)
+            {
+                if (plaintext[i] - 32 == ALPHABET[t])
+                {
+                    cyphertext[i] = key[t] + 32;
+                }
+            }
+
+        }
+
+        //Punctuation and spaces
+        else
+        {
+            cyphertext[i] = plaintext[i];
+        }
+
+    }
+
+    //print ciphertext
+    printf("ciphertext: %s\n", cyphertext);
+
+    return 0;
+}
