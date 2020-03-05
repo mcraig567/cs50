@@ -8,26 +8,65 @@ int main(int argc, string argv[])
     string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string key = argv[1];
 
-    //Error Proofing TBD
-//    if (strlen(key) != 26)
-//    {
-//        printf("")
-//    }
-
-
     //Convert key to all uppercase
     for (int j = 0; j < 26; j++)
     {
         key[j] = toupper(key[j]);
     }
 
+    //Key Validation
+    //Confirm key is 26 characters
+    if (strlen(key) != 26)
+    {
+        printf("Invalid Key - Must be 26 letters\n");
+        return 1;
+    }
 
+    //Iterate across characters in key
+    for (int i = 0; i < strlen(key); i++)
+    {
+
+        //Check all letters
+        if (key[i] < 65 || key[i] > 90)
+        {
+            printf("Invalid Key - All values must be letters\n");
+            return 1;
+        }
+
+
+        //Check for repeat letters
+        int letterCount = 0;
+
+        for (int j = 0; j < strlen(key); j++)
+        {
+            if (key[i] == key[j])
+            {
+                letterCount++;
+            }
+        }
+
+        if (letterCount > 1)
+        {
+            printf("Invalid Key - Cannot repeat letters\n");
+            printf("Letter %c is being repeated\n", key[i]);
+            return 1;
+        }
+    }
+
+    //Get plaintext from user
     string plaintext = get_string("plaintext: ");
     char cyphertext[strlen(plaintext)];
 
+    //printf("String Length: %lu\n", strlen(plaintext));
+    //printf("\n");
 
+    //Begin substitution process
     for (int i = 0, n = strlen(plaintext); i < n; i++)
     {
+        //printf("Loop #: %i\n", i);
+        //printf("Character: %c\n", plaintext[i]);
+        //printf("Character int: %i\n", (int) plaintext[i]);
+
         //Capital letters
         if (plaintext[i] >= 65 && plaintext[i] <= 90)
         {
@@ -59,10 +98,19 @@ int main(int argc, string argv[])
             cyphertext[i] = plaintext[i];
         }
 
+        //printf("Cyphertext Character: %c\n", cyphertext[i]);
+        //printf("Cyphertext: %s\n", cyphertext);
+        //printf("\n");
     }
 
     //print ciphertext
-    printf("ciphertext: %s\n", cyphertext);
+    printf("ciphertext: ");
+
+    for (int i = 0, n = strlen(plaintext); i < n; i++)
+    {
+        printf("%c", cyphertext[i]);
+    }
+    printf("\n");
 
     return 0;
 }
