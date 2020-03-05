@@ -25,14 +25,13 @@ int main(int argc, string argv[])
     //Iterate across characters in key
     for (int i = 0; i < strlen(key); i++)
     {
-
+        
         //Check all letters
         if (key[i] < 65 || key[i] > 90)
         {
             printf("Invalid Key - All values must be letters\n");
             return 1;
         }
-
 
         //Check for repeat letters
         int letterCount = 0;
@@ -57,16 +56,9 @@ int main(int argc, string argv[])
     string plaintext = get_string("plaintext: ");
     char cyphertext[strlen(plaintext)];
 
-    //printf("String Length: %lu\n", strlen(plaintext));
-    //printf("\n");
-
     //Begin substitution process
     for (int i = 0, n = strlen(plaintext); i < n; i++)
     {
-        //printf("Loop #: %i\n", i);
-        //printf("Character: %c\n", plaintext[i]);
-        //printf("Character int: %i\n", (int) plaintext[i]);
-
         //Capital letters
         if (plaintext[i] >= 65 && plaintext[i] <= 90)
         {
@@ -89,7 +81,6 @@ int main(int argc, string argv[])
                     cyphertext[i] = key[t] + 32;
                 }
             }
-
         }
 
         //Punctuation and spaces
@@ -97,10 +88,6 @@ int main(int argc, string argv[])
         {
             cyphertext[i] = plaintext[i];
         }
-
-        //printf("Cyphertext Character: %c\n", cyphertext[i]);
-        //printf("Cyphertext: %s\n", cyphertext);
-        //printf("\n");
     }
 
     //print ciphertext
