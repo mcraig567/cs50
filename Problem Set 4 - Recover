@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+
+//Look through data to find "start" of a jpeg
+//Search in 512 byte sections until you find the start of a new one
+//Read the data onto the file from last location to current location - 1
+//Repeat until complete
+
+    if (argc!= 2)
+    {
+        return 1;
+    }
+
+    FILE *file = fopen(argv[1], "r");
+    if (!file)
+    {
+        return 1;
+    }
+
+    fseek(file, 0L, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0L, SEEK_SET);
+
+//    printf("The file is size %li\n", length);
+
+    //Read first four bytes to confirm jpeg
+    unsigned char bytes[length];
+    fread(bytes, sizeof(char), length, file);
+
+    int file_number = 0;
+
+    for (int i = 0; i < length; i++)
+    {
+        //Debugging variables (due to size of bytes)
+//        char byte1 = bytes[i];
+//        char byte2 = bytes[i+1];
+//        char byte3 = bytes[i+2];
+//        char byte4 = bytes[i+3];
+
+
+        //Find start of picture
+        if (bytes[i] == 0xff && bytes[i + 1] == 0xd8 && bytes[i + 2] == 0xff && (bytes[i + 3] >= 0xe0 && bytes[i + 3] <= 0xef))
+        {
+            //Mark start of picture
+            int file_start = i;
+            printf("File %i start: %i\n", file_number, i);
+
+            //Find start of next picture (and end of current picture)
+            for (int j = i + 512; j < length; j += 512)
+            {
+                if (bytes[j] == 0xff && bytes[j + 1] == 0xd8 && bytes[j + 2] == 0xff && (bytes[j + 3] >= 0xe0 && bytes[j + 3] <= 0xef))
+                {
+                    //Mark end of current picture
+                    int file_end = j - 1;
+                    printf("File %i end: %i\n", file_number, j - 1);
+                    printf("\n");
+
+                    //Create new file & check if NULL
+                    char file_name[7];
+
+                    if (file_number < 10)
+                        sprintf(file_name, "00%i.jpg", file_number);
+                    else if (file_number < 100)
+                        sprintf(file_name, "0%i.jpg", file_number);
+                    else
+                        sprintf(file_name, "%i.jpg", file_number);
+
+                    FILE *new_file = fopen(file_name, "a");
+                    if (!new_file)
+                    {
+                        return 1;
+                    }
+
+                    //Print bytes to new file from start to end
+
+//Somehow coming up ~512 bytes short for each picture. Ish. Unknown amount
+                    for (int l = file_start; l < file_end; l++)
+                    {
+                        fputc(bytes[l], new_file);
+                    }
+
+                    fseek(new_file, 0L, SEEK_END);
+                    long length0 = ftell(new_file);
+                    fseek(new_file, 0L, SEEK_SET);
+
+                    int theo_length = file_end - file_start;
+                    printf("Theoretical file size: %i\n", theo_length);
+                    printf("Actual file size %li\n", length0);
+                    printf("\n");
+
+                    fclose(new_file);
+                    file_number++;
+
+                    //Set start of next loop to start of next picture
+                    i = file_end;
+
+//Set if j + 512 > length statement for final file
+
+                    break;
+                }
+            }
+        }
+
+    }
+
+
+fclose(file);
+}
