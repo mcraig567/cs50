@@ -4,10 +4,11 @@
 int main(int argc, char *argv[])
 {
 
-//Look through data to find "start" of a jpeg
-//Search in 512 byte sections until you find the start of a new one
-//Read the data onto the file from last location to current location - 1
-//Repeat until complete
+/** Look through data to find "start" of a jpeg
+    Search in 512 byte sections until you find the start of a new one
+    Read the data onto the file from last location to current location - 1
+    Repeat until complete
+*/
 
     if (argc!= 2)
     {
@@ -34,13 +35,6 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < length; i++)
     {
-        //Debugging variables (due to size of bytes)
-//        char byte1 = bytes[i];
-//        char byte2 = bytes[i+1];
-//        char byte3 = bytes[i+2];
-//        char byte4 = bytes[i+3];
-
-
         //Find start of picture
         if (bytes[i] == 0xff && bytes[i + 1] == 0xd8 && bytes[i + 2] == 0xff && (bytes[i + 3] >= 0xe0 && bytes[i + 3] <= 0xef))
         {
@@ -59,7 +53,7 @@ int main(int argc, char *argv[])
                     printf("\n");
 
                     //Create new file & check if NULL
-                    char file_name[7];
+                    char file_name[8];
 
                     if (file_number < 10)
                         sprintf(file_name, "00%i.jpg", file_number);
@@ -68,29 +62,14 @@ int main(int argc, char *argv[])
                     else
                         sprintf(file_name, "%i.jpg", file_number);
 
-                    FILE *new_file = fopen(file_name, "a");
+                    FILE *new_file = fopen(file_name, "w");
                     if (!new_file)
                     {
                         return 1;
                     }
 
                     //Print bytes to new file from start to end
-
-//Somehow coming up ~512 bytes short for each picture. Ish. Unknown amount
-                    for (int l = file_start; l < file_end; l++)
-                    {
-                        fputc(bytes[l], new_file);
-                    }
-
-                    fseek(new_file, 0L, SEEK_END);
-                    long length0 = ftell(new_file);
-                    fseek(new_file, 0L, SEEK_SET);
-
-                    int theo_length = file_end - file_start;
-                    printf("Theoretical file size: %i\n", theo_length);
-                    printf("Actual file size %li\n", length0);
-                    printf("\n");
-
+                    fwrite(&bytes[file_start], sizeof(char), file_end - file_start, new_file);
                     fclose(new_file);
                     file_number++;
 
