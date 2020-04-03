@@ -4,13 +4,16 @@
 int main(int argc, char *argv[])
 {
 
-/** Look through data to find "start" of a jpeg
-    Search in 512 byte sections until you find the start of a new one
-    Read the data onto the file from last location to current location - 1
+/**Read in 512 bytes
+ * Write to new file
+ * If start is jpeg (if not, another 512 bytes)
+ *      Close existing file
+ *      Open new file
+ *      Write to new file
     Repeat until complete
 */
 
-    if (argc!= 2)
+    if (argc != 2)
     {
         return 1;
     }
@@ -21,70 +24,73 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    //Find length of the memory card
     fseek(file, 0L, SEEK_END);
     long length = ftell(file);
     fseek(file, 0L, SEEK_SET);
 
-//    printf("The file is size %li\n", length);
-
-    //Read first four bytes to confirm jpeg
-    unsigned char bytes[length];
-    fread(bytes, sizeof(char), length, file);
-
+    //Create buffer
+    unsigned char buffer[512];
     int file_number = 0;
+    int first_pass = 0;
+    FILE *new_file;
+    char file_name[8];
 
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < length; i += 512)
     {
+        //Read in 512 bytes to buffer
+        fread(buffer, sizeof(char), 512, file);
+
         //Find start of picture
-        if (bytes[i] == 0xff && bytes[i + 1] == 0xd8 && bytes[i + 2] == 0xff && (bytes[i + 3] >= 0xe0 && bytes[i + 3] <= 0xef))
+        if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] >= 0xe0 && buffer[3] <= 0xef))
         {
-            //Mark start of picture
-            int file_start = i;
-            printf("File %i start: %i\n", file_number, i);
 
-            //Find start of next picture (and end of current picture)
-            for (int j = i + 512; j < length; j += 512)
+            if (first_pass == 0)
             {
-                if (bytes[j] == 0xff && bytes[j + 1] == 0xd8 && bytes[j + 2] == 0xff && (bytes[j + 3] >= 0xe0 && bytes[j + 3] <= 0xef))
+                //Create new file name
+                if (file_number < 10)
+                    sprintf(file_name, "00%i.jpg", file_number);
+                else if (file_number < 100)
+                    sprintf(file_name, "0%i.jpg", file_number);
+                else
+                    sprintf(file_name, "%i.jpg", file_number);
+
+                new_file = fopen(file_name, "w");
+                if (!new_file)
                 {
-                    //Mark end of current picture
-                    int file_end = j - 1;
-                    printf("File %i end: %i\n", file_number, j - 1);
-                    printf("\n");
+                    return 1;
+                }
 
-                    //Create new file & check if NULL
-                    char file_name[8];
+                first_pass++;
 
-                    if (file_number < 10)
-                        sprintf(file_name, "00%i.jpg", file_number);
-                    else if (file_number < 100)
-                        sprintf(file_name, "0%i.jpg", file_number);
-                    else
-                        sprintf(file_name, "%i.jpg", file_number);
 
-                    FILE *new_file = fopen(file_name, "w");
-                    if (!new_file)
-                    {
-                        return 1;
-                    }
+            }
+            else //Not first pass
+            {
+                //Close existing file
+                fclose(new_file);
+                file_number++;
 
-                    //Print bytes to new file from start to end
-                    fwrite(&bytes[file_start], sizeof(char), file_end - file_start, new_file);
-                    fclose(new_file);
-                    file_number++;
+                //Create new file and check if NULL
+                if (file_number < 10)
+                    sprintf(file_name, "00%i.jpg", file_number);
+                else if (file_number < 100)
+                    sprintf(file_name, "0%i.jpg", file_number);
+                else
+                    sprintf(file_name, "%i.jpg", file_number);
 
-                    //Set start of next loop to start of next picture
-                    i = file_end;
-
-//Set if j + 512 > length statement for final file
-
-                    break;
+                new_file = fopen(file_name, "w");
+                if (!new_file)
+                {
+                    return 1;
                 }
             }
         }
 
+    //Write next 512 bytes to new file
+    if (first_pass > 0)
+        fwrite(&buffer, sizeof(char), 512, new_file);
     }
-
 
 fclose(file);
 }
