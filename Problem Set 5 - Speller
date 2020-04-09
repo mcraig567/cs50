@@ -1,0 +1,173 @@
+// Implements a dictionary's functionality
+
+#include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+
+#include "dictionary.h"
+
+// Represents a node in a hash table
+typedef struct node
+{
+    char word[LENGTH + 2];
+    struct node *next;
+}
+node;
+
+// Number of buckets in hash table
+const unsigned int N = 10000;
+
+// Hash table
+node *table[N];
+
+void destroy(node *item);
+
+
+// Returns true if word is in dictionary else false
+bool check(const char *word)
+{
+/**Hash word to find bucket
+ *Travel along bucket to see if word exists
+ * if word exist, return true
+ */
+
+    int bucket = hash(word);
+
+    for (node *tmp = table[bucket]; tmp != NULL; tmp = tmp->next)
+    {
+        if (strcasecmp(tmp->word, word) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Hashes word to a number
+unsigned int hash(const char *word)
+{
+    //Simple hash - sum the ASCII values of the capital characters and mod by hash table size
+    unsigned int h = 0;
+
+    for (int i = 0; i < strlen(word); i++)
+    {
+        h += toupper(word[i]);
+    }
+
+    h = h % N;
+
+    return h;
+}
+
+// Loads dictionary into memory, returning true if successful else false
+bool load(const char *dictionary)
+{
+/**Open dictionary file
+ * Read word and create node
+ * Hash word to find bucket
+ * Bucketize word and chain if collision
+ *
+ */
+    //Open dictionary file
+    FILE *dict = fopen(dictionary, "r");
+    if (dict == NULL)
+    {
+        return false;
+    }
+
+    //Read in one line at a time until complete
+    char str[LENGTH + 1];
+    while (fscanf(dict, "%s", str) != EOF)
+    {
+
+        //Create node and read word
+        node *n = malloc(sizeof(node));
+        if (n != NULL)
+        {
+            strcpy(n->word, str);
+            n->next = NULL;
+        }
+
+        //Hash node
+        int bucket = hash(n->word);
+        //printf ("Bucket: %i\n", bucket);
+
+        //Place word in bucket and chain if necessary
+        if (table[bucket])
+        {
+            node *tmp = table[bucket];
+            while (tmp->next != NULL)
+            {
+                tmp = tmp->next;
+            }
+            tmp->next = n;
+        }
+        else
+        {
+            table[bucket] = n;
+        }
+    }
+
+    fclose(dict);
+    return true;
+}
+
+// Returns number of words in dictionary if loaded else 0 if not yet loaded
+unsigned int size(void)
+{
+/**Iterate through buckets
+ * If bucket has multiple items, continue along list until next = NULL
+ */
+
+  int counter = 0;
+
+  for (int i = 0; i < N; i++)
+  {
+      if (table[i])
+      {
+        node *tmp = table[i];
+        counter++;
+
+        while (tmp->next != NULL)
+        {
+            counter++;
+            tmp = tmp->next;
+        }
+      }
+  }
+    return counter;
+}
+
+// Unloads dictionary from memory, returning true if successful else false
+bool unload(void)
+{
+/**Iterate across buckets
+ * Move to end of linked list and free node
+ */
+
+    for (int i = 0; i < N; i++)
+    {
+        if (table[i])
+        {
+            node *tmp = table[i];
+            destroy(tmp);
+        }
+    }
+    return true;
+}
+
+void destroy(node *item)
+{
+    if (item->next == NULL)
+    {
+        free(item);
+    }
+    else
+    {
+        destroy(item->next);
+    }
+}
