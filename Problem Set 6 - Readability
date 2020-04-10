@@ -1,0 +1,38 @@
+from cs50 import get_string
+
+#Get input from user
+text = get_string("Text: ")
+
+words = 1       #Last word won't be caught, so set to 1 to start
+sentances = 0
+letters = 0
+
+#Iterate through text determining number of characters, sentances, and words
+for char in text:
+    if char == " ":
+        words += 1
+
+    elif char == "." or char == "!" or char == "?":
+        sentances += 1
+
+    #Capital letters
+    elif ord(char) >= 65 and ord(char) <= 90:
+        letters += 1
+
+    #Lower case letters
+    elif ord(char) >= 97 and ord(char) <= 122:
+        letters += 1
+
+#Run calculations to determine what index should be
+letterHunWord = float(letters / words) * 100
+sentanceHunWord = float(sentances / words) * 100
+
+index = 0.0588 * letterHunWord - 0.296 * sentanceHunWord - 15.8
+
+#Print out grade level
+if index < 1:
+    print("Before Grade 1")
+elif index >= 16:
+    print("Grade 16+")
+else:
+    print(f"Grade {round(index)}")
