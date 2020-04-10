@@ -1,0 +1,78 @@
+import csv
+import re
+from sys import argv, exit
+
+"""
+Check input contains 3 commands (dna.py, database, sequence)
+Open CSV file and read in line by line
+    First item (name) will be key
+    Other items (values) will be a tuple
+Close CSV file
+Open DNA sequence and read in to string
+For each STR, look for first instance
+    Calculate length of STR
+    Check for subsequent instances, keeping track of how many
+Compare instances of STRs to dictionary
+Return match, or no match if none
+"""
+
+#Check Input
+if len(argv) != 3:
+    print("Incorrect number of command-line arguements")
+    exit(1)
+
+#Create a dictionary with the name of the person as a key, and the number of STRs as the values
+#Default key is 'name', and the keys of 'name' are the names of the STRs
+people = {}
+
+with open(argv[1], newline='') as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+
+        strs = []
+        for value in range(1 , len(row)):
+            strs.append(row[value])
+
+        people[row[0]] = tuple(strs)
+
+#Open file and read in DNA sequence. Close after reading
+sequence_file = open(argv[2], "r")
+sequence = sequence_file.read()
+sequence_file.close()
+
+#Check for most consecutive repeats of each STR in the sequence
+str_repeats = []
+
+for dna in people['name']:
+
+    #Find consecutive instances. Thank you to Reddit user u/KopfSzmercen and Blauelf on Stack Exchange
+    start = 0
+    count = 0
+    highest = 0
+
+    while True:
+        dna_start = sequence.find(dna, start)   #Find start of next instance
+        if dna_start == -1:                     #Once at the end of the sequence, break
+            break
+
+        if dna_start != start:                  #Next STR repeat is expected at start. If not, restart count
+            count = 1
+        else:
+            count += 1
+
+        if count > highest:                     #Check if new set of STRs is higher than past
+            highest = count
+
+        start = dna_start + len(dna)            #Update start to next expected start
+
+    str_repeats.append(str(highest))
+
+#Check people for match of str_repeats to the database
+#print(str_repeats)
+for name in people:
+#    print(f"{name}: {people[name]}")
+    if people[name] == tuple(str_repeats):
+        print(name)
+        exit(0)
+
+print("No Match")
