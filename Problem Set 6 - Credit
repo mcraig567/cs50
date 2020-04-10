@@ -1,0 +1,48 @@
+from cs50 import get_string
+
+number = get_string("Number: ")
+
+length = len(number)
+sum = 0
+
+#Iterate through the number
+for digit in range(length):
+
+    location = length - digit - 1   #Because 0 indexed lists
+    from_end = length - digit       #For checking if needs to be doubled
+
+    #Split into even and odd length numbers to correct the "every other from end" check
+    if length % 2 == 0:
+        if from_end % 2 == 0:
+            sum += int(number[location])
+
+        elif int(number[location]) * 2 >= 10:
+            tmp = str(int(number[location]) * 2)
+            sum += int(tmp[0])
+            sum += int(tmp[1])
+
+        else:
+            sum += int(number[location]) * 2
+
+    else:
+        if from_end % 2 != 0:
+            sum += int(number[location])
+
+        #When the doubled number has two digits - add each digit
+        elif int(number[location]) * 2 >= 10:
+            tmp = str(int(number[location]) * 2)
+            sum += int(tmp[0])
+            sum += int(tmp[1])
+
+        else:
+            sum += int(number[location]) * 2
+
+#Determine the type of card
+if sum % 10 != 0:
+    print("INVALID")
+elif length == 15:
+    print("AMEX")
+elif number[0] == "4":
+    print("VISA")
+else:
+    print("MASTERCARD")
