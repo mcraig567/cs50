@@ -1,0 +1,95 @@
+body, html
+{
+   height: 100%;
+   margin: 0;
+}
+
+.bg
+{
+    background-image: url("background.jpg");
+    background-color: #cccccc;
+    height: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+h1
+{
+    color: black;
+}
+
+p
+{
+    color: black;
+}
+
+table
+{
+    color: black;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th
+{
+    border: 1px solid black;
+    padding: 5px;
+}
+
+td
+{
+    border: 1px solid black;
+    padding: 5px;
+}
+
+/* Dropdown Button */
+.dropbtn {
+  background-color: black;
+  color: #fdf64d;
+  padding: 16px;
+  font-size: 16px;
+  font-family: "poor richard";
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+  background-color: #fd0002;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  /*float: right;*/
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+ /* right: 0;*/
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  font-family: "poor richard";
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
